@@ -4,15 +4,25 @@ const pool = require('../config/db');
 
 router.get('/', async (req, res) => {
     try {
-        // We add placeholder images so the React frontend has something to draw!
+        const [columns] = await pool.query(
+            `SELECT COLUMN_NAME
+             FROM INFORMATION_SCHEMA.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = 'schools'
+               AND COLUMN_NAME = 'image_url'`
+        );
+
+        const imageColumn = columns.length > 0
+            ? "COALESCE(image_url, 'https://placehold.co/640x360/e2e8f0/1e3a8a?text=School') AS image_url"
+            : "'https://placehold.co/640x360/e2e8f0/1e3a8a?text=School' AS image_url";
+
         const query = `
-            SELECT 
-                id, 
-                name, 
+            SELECT
+                id,
+                name,
                 location,
-                'https://via.placeholder.com/400x200?text=School+Building' AS image_url,
-                'https://via.placeholder.com/150?text=Logo' AS logo_url
-            FROM schools 
+                ${imageColumn}
+            FROM schools
             ORDER BY id ASC
         `;
         

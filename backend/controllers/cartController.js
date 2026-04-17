@@ -1,25 +1,33 @@
 const pool = require('../config/db');
+const { columnExists } = require('../utils/schema');
+
+const PRODUCT_PLACEHOLDER = 'https://placehold.co/600x400/e2e8f0/1e3a8a?text=ScholarKit';
 
 // 1. Get Cart
 exports.getCart = async (req, res) => {
     try {
         const userId = req.user.id; 
+        const hasProductImage = await columnExists('products', 'image_url');
+        const imageSelect = hasProductImage
+            ? 'COALESCE(p.image_url, ?) AS image_url'
+            : '? AS image_url';
 
         const query = `
             SELECT 
-                c.id, -- FIXED: Removed 'as cart_item_id' so React can read item.id
+                c.id,
                 c.quantity, 
                 c.size, 
                 p.id as product_id, 
                 p.name, 
-                p.price, 
-                'https://via.placeholder.com/150' AS image_url 
+                p.price,
+                p.discount_percent,
+                ${imageSelect}
             FROM cart_items c
             JOIN products p ON c.product_id = p.id
             WHERE c.user_id = ?
         `;
         
-        const [rows] = await pool.query(query, [userId]);
+        const [rows] = await pool.query(query, [PRODUCT_PLACEHOLDER, userId]);
         res.json(rows);
     } catch (err) {
         console.error("Cart Fetch Error:", err);

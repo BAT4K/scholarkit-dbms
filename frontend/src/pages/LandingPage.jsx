@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 export default function LandingPage() {
     return (
@@ -16,34 +15,19 @@ export default function LandingPage() {
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-8"
-                    >
+                    <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-8">
                         School Uniforms,<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
                             Redefined.
                         </span>
-                    </motion.h1>
+                    </h1>
 
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="mt-4 max-w-2xl mx-auto text-xl text-gray-600 mb-12"
-                    >
+                    <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-600 mb-12">
                         Premium quality, perfect fit, and delivered to your doorstep.
                         Experience the easiest way to shop for your school essentials.
-                    </motion.p>
+                    </p>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="flex flex-col sm:flex-row justify-center gap-4"
-                    >
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link
                             to="/select-school"
                             className="px-8 py-4 rounded-full bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
@@ -56,7 +40,7 @@ export default function LandingPage() {
                         >
                             Log In
                         </Link>
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
@@ -70,10 +54,7 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {/* Feature 1 */}
-                        <motion.div
-                            whileHover={{ y: -5 }}
-                            className="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-all duration-300"
-                        >
+                        <div className="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-all duration-300">
                             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6 text-blue-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -81,13 +62,10 @@ export default function LandingPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Premium Quality</h3>
                             <p className="text-gray-600">Durable fabrics designed to withstand the active school day while keeping students comfortable.</p>
-                        </motion.div>
+                        </div>
 
                         {/* Feature 2 */}
-                        <motion.div
-                            whileHover={{ y: -5 }}
-                            className="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-all duration-300"
-                        >
+                        <div className="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-all duration-300">
                             <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6 text-purple-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -95,13 +73,10 @@ export default function LandingPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Fast Delivery</h3>
                             <p className="text-gray-600">Order online and get your uniforms delivered directly to your home within 2-3 business days.</p>
-                        </motion.div>
+                        </div>
 
                         {/* Feature 3 */}
-                        <motion.div
-                            whileHover={{ y: -5 }}
-                            className="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-all duration-300"
-                        >
+                        <div className="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-all duration-300">
                             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6 text-green-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -109,7 +84,7 @@ export default function LandingPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Easy Returns</h3>
                             <p className="text-gray-600">Size didn't fit? No problem. Our hassle-free return policy ensures you get the perfect fit.</p>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>

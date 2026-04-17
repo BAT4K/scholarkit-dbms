@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
@@ -32,6 +33,7 @@ export const CartProvider = ({ children }) => {
   // Auto-fetch when user logs in
   useEffect(() => {
     refreshCartCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (

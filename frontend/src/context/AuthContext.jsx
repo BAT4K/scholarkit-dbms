@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
@@ -8,16 +9,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper to process token
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
   const processToken = (token) => {
     try {
       const decoded = jwtDecode(token);
-      // On refresh, we set the user from the token payload
       setUser(decoded);
       localStorage.setItem("token", token);
-    } catch (error) {
-      console.error("Invalid token:", error);
+      return decoded;
+    } catch {
       logout();
+      return null;
     }
   };
 
@@ -28,26 +33,23 @@ export const AuthProvider = ({ children }) => {
       processToken(token);
     }
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Login Action
   const login = async (email, password) => {
     const res = await axios.post('/api/auth/login', { email, password });
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
+    const decodedUser = processToken(res.data.token);
+    setUser({ ...decodedUser, ...res.data.user });
+    return res.data.user;
   };
 
   // 3. Register Action (NEW)
   const register = async (name, email, password) => {
     const res = await axios.post('/api/auth/register', { name, email, password });
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
-  };
-
-  // 4. Logout Action
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
+    const decodedUser = processToken(res.data.token);
+    setUser({ ...decodedUser, ...res.data.user });
+    return res.data.user;
   };
 
   return (

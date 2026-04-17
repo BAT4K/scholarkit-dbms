@@ -1,4 +1,7 @@
 const pool = require('../config/db');
+const { columnExists } = require('../utils/schema');
+
+const PRODUCT_PLACEHOLDER = 'https://placehold.co/600x400/e2e8f0/1e3a8a?text=ScholarKit';
 
 // 1. Place Order (Directly triggers the MySQL Stored Procedure)
 exports.placeOrder = async (req, res) => {
@@ -32,17 +35,24 @@ exports.placeOrder = async (req, res) => {
 // 2. Get User's Order History (Advanced MySQL JSON Aggregation)
 exports.getUserOrders = async (req, res) => {
   try {
+    const hasProductImage = await columnExists('products', 'image_url');
+    const imageExpression = hasProductImage
+      ? 'COALESCE(p.image_url, ?)'
+      : '?';
+
     const query = `
       SELECT 
         o.id, 
         o.total_amount, 
         o.status, 
         o.created_at,
+        o.shipping_fee,
+        o.tracking_number,
         COALESCE(
           JSON_ARRAYAGG(
-            JSON_OBJECT(
+              JSON_OBJECT(
               'name', p.name,
-              'image_url', 'https://via.placeholder.com/150',
+              'image_url', ${imageExpression},
               'quantity', oi.quantity,
               'price', oi.price_at_purchase
             )
@@ -57,7 +67,7 @@ exports.getUserOrders = async (req, res) => {
       ORDER BY o.created_at DESC
     `;
     
-    const [rows] = await pool.query(query, [req.user.id]);
+    const [rows] = await pool.query(query, [PRODUCT_PLACEHOLDER, req.user.id]);
     
     const parsedRows = rows.map(row => ({
       ...row,

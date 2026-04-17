@@ -1,23 +1,18 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
-  // 1. Wait for Auth check to finish
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen text-gray-500">
-        Loading session...
-      </div>
-    );
+    return <LoadingSpinner fullPage label="Loading your session..." />;
   }
 
-  // 2. If no user, kick them out to Login
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  // 3. Authorized? Let them through
   return children;
 }

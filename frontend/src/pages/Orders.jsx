@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EmptyState from '../components/EmptyState';
+import { attachFallback, resolveImageUrl } from '../utils/assets';
 
 export default function Orders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -17,7 +21,7 @@ export default function Orders() {
         });
         setOrders(res.data);
       } catch (err) {
-        console.error("Failed to fetch orders", err);
+        setError(err.response?.data?.message || 'Failed to fetch order history.');
       } finally {
         setLoading(false);
       }
@@ -26,85 +30,99 @@ export default function Orders() {
     if (user) fetchOrders();
   }, [user]);
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Loading history...</div>;
+  if (loading) return <LoadingSpinner fullPage label="Loading order history..." />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">My Orders</h1>
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mb-8">
+        <p className="text-sm font-black uppercase tracking-[0.3em] text-indigo-600">Order history</p>
+        <h1 className="mt-3 text-4xl font-black text-slate-900">My Orders</h1>
+      </div>
 
-      {orders.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
-          <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
-          <Link to="/shop" className="text-blue-600 font-semibold hover:underline">Start Shopping</Link>
-        </div>
+      {error ? (
+        <EmptyState
+          title="Order history unavailable"
+          description={error}
+        />
+      ) : orders.length === 0 ? (
+        <EmptyState
+          title="No orders yet"
+          description="Once you complete checkout, your order history will appear here."
+          action={<Link to="/shop" className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700">Start shopping</Link>}
+        />
       ) : (
         <div className="space-y-6">
           {orders.map((order) => (
-            <div key={order.id} className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-              
-              {/* Order Header */}
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex gap-6 text-sm">
+            <div key={order.id} className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+              <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap gap-6 text-sm">
                   <div>
-                    <p className="text-gray-500 uppercase font-semibold text-xs mb-1">Order Placed</p>
-                    <p className="font-medium text-gray-900">{new Date(order.created_at).toLocaleDateString()}</p>
+                    <p className="mb-1 text-xs font-semibold uppercase text-slate-500">Order Placed</p>
+                    <p className="font-medium text-slate-900">{new Date(order.created_at).toLocaleDateString()}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 uppercase font-semibold text-xs mb-1">Total</p>
-                    <p className="font-medium text-gray-900">₹{order.total_amount}</p>
+                    <p className="mb-1 text-xs font-semibold uppercase text-slate-500">Total</p>
+                    <p className="font-medium text-slate-900">₹{Number(order.total_amount).toFixed(2)}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 uppercase font-semibold text-xs mb-1">Order #</p>
-                    <p className="font-medium text-gray-900">{order.id}</p>
+                    <p className="mb-1 text-xs font-semibold uppercase text-slate-500">Shipping</p>
+                    <p className="font-medium text-slate-900">
+                      {Number(order.shipping_fee) > 0 ? `₹${Number(order.shipping_fee).toFixed(2)}` : <span className="text-emerald-600 font-semibold">FREE</span>}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-xs font-semibold uppercase text-slate-500">Order #</p>
+                    <p className="font-medium text-slate-900">{order.id}</p>
                   </div>
                 </div>
                 
-                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border
-                  ${order.status === 'Pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
-                    order.status === 'Shipped' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                    'bg-green-50 text-green-700 border-green-200'}`}>
-                  {order.status}
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide
+                    ${order.status === 'Pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
+                      order.status === 'Shipped' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-green-50 text-green-700 border-green-200'}`}>
+                    {order.status}
+                  </span>
+                  {order.tracking_number && (
+                    <a
+                      href={`https://www.delhivery.com/track/?ref=${order.tracking_number}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100"
+                    >
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                      Track via Delhivery: {order.tracking_number}
+                    </a>
+                  )}
+                </div>
               </div>
 
-              {/* Order Items Gallery */}
-              <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                
-                {/* Horizontal Scroll of Product Images */}
-                <div className="flex gap-3 overflow-x-auto w-full">
-                  {/* We safely map items, defaulting to empty array if none exist */}
+              <div className="flex flex-col gap-5 p-6">
+                <div className="flex w-full gap-3 overflow-x-auto">
                   {(order.items || []).slice(0, 4).map((item, index) => {
-                    // Logic: If this is the 4th item AND there are more items hidden, show badge
                     if (index === 3 && order.items.length > 4) {
                       return (
-                        <div key="more" className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-500 text-xs font-bold">
+                        <div key="more" className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 text-xs font-bold text-slate-500">
                           +{order.items.length - 3} more
                         </div>
                       );
                     }
                     
                     return (
-                      <div key={index} className="group relative flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden bg-gray-50">
-                        {item.image_url ? (
-                          <img 
-                            src={item.image_url} 
-                            alt={item.name} 
-                            className="w-full h-full object-cover" 
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full text-[10px] text-gray-400 text-center p-1">
-                            {item.name}
-                          </div>
-                        )}
+                      <div key={index} className="group relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                        <img
+                          src={resolveImageUrl(item.image_url, item.name)}
+                          alt={item.name}
+                          onError={(event) => attachFallback(event, item.name)}
+                          className="h-full w-full object-cover"
+                        />
                         
-                        {/* Tooltip on Hover */}
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <span className="text-[10px] text-white font-medium text-center px-1 line-clamp-2">
                             {item.name}
                           </span>
                         </div>
 
-                        {/* Quantity Badge (only if > 1) */}
                         {item.quantity > 1 && (
                           <div className="absolute top-0 right-0 bg-gray-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl shadow-sm">
                             x{item.quantity}
@@ -113,6 +131,14 @@ export default function Orders() {
                       </div>
                     );
                   })}
+                </div>
+                <div className="flex justify-end">
+                  <Link
+                    to={`/orders/${order.id}`}
+                    className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-700"
+                  >
+                    View order details
+                  </Link>
                 </div>
               </div>
             </div>
