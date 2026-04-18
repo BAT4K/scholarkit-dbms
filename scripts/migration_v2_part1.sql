@@ -20,6 +20,7 @@ SELECT
   p.category             AS product_category,
   p.stock                AS product_stock,
   p.discount_percent     AS product_discount,
+  p.image_url            AS image_url,
   s.name                 AS school_name,
   s.id                   AS school_id
 FROM users u

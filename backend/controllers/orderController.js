@@ -3,15 +3,14 @@ const { columnExists } = require('../utils/schema');
 
 const PRODUCT_PLACEHOLDER = 'https://placehold.co/600x400/e2e8f0/1e3a8a?text=ScholarKit';
 
-// 1. Place Order (Directly triggers the MySQL Stored Procedure)
+// Place Order (Trigger Stored Procedure)
 exports.placeOrder = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // FIXED: Calling the Stored Procedure with EXACTLY 1 argument (userId)
     await pool.query('CALL PlaceOrder(?)', [userId]);
     
-    // Fetch the newly created order ID to pass to the Success Page
+    // Fetch the newly created order ID
     const [orderResult] = await pool.query(
       'SELECT id FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 1', 
       [userId]
@@ -19,7 +18,7 @@ exports.placeOrder = async (req, res) => {
     
     const orderId = orderResult.length > 0 ? orderResult[0].id : null;
 
-    res.status(201).json({ message: "Order placed successfully via Stored Procedure!", orderId });
+    res.status(201).json({ message: "Order placed successfully", orderId });
 
   } catch (err) {
     console.error("Checkout Error:", err.message);
@@ -32,7 +31,7 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
-// 2. Get User's Order History (Advanced MySQL JSON Aggregation)
+// Get User's Order History
 exports.getUserOrders = async (req, res) => {
   try {
     const hasProductImage = await columnExists('products', 'image_url');
@@ -81,12 +80,12 @@ exports.getUserOrders = async (req, res) => {
   }
 };
 
-// 3. Get Single Order Details
+// Get Single Order Details
 exports.getOrderDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const [rows] = await pool.query(
-      `SELECT oi.id, oi.quantity, oi.price_at_purchase, p.name, p.category 
+      `SELECT oi.id, oi.quantity, oi.price_at_purchase, p.name, p.category, p.image_url 
        FROM order_items oi
        JOIN products p ON oi.product_id = p.id
        WHERE oi.order_id = ?`,

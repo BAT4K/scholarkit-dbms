@@ -3,7 +3,7 @@ const { columnExists } = require('../utils/schema');
 
 const PRODUCT_PLACEHOLDER = 'https://placehold.co/600x400/e2e8f0/1e3a8a?text=ScholarKit';
 
-// 1. Get Cart
+// Get Cart
 exports.getCart = async (req, res) => {
     try {
         const userId = req.user.id; 
@@ -35,7 +35,7 @@ exports.getCart = async (req, res) => {
     }
 };
 
-// 2. Add to Cart
+// Add to Cart
 exports.addToCart = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -48,7 +48,7 @@ exports.addToCart = async (req, res) => {
         const [existingItems] = await pool.query(checkQuery, [userId, product_id, itemSize]);
 
         if (existingItems.length > 0) {
-            // If it exists, just update the quantity (No RETURNING needed in MySQL)
+            // If it exists, update the quantity
             const updateQuery = 'UPDATE cart_items SET quantity = quantity + ? WHERE id = ?';
             await pool.query(updateQuery, [itemQuantity, existingItems[0].id]);
         } else {
@@ -64,7 +64,7 @@ exports.addToCart = async (req, res) => {
     }
 };
 
-// 3. Remove from Cart
+// Remove from Cart
 exports.removeFromCart = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -80,14 +80,13 @@ exports.removeFromCart = async (req, res) => {
     }
 };
 
-// 4. Update Cart Quantity (The missing function!)
+// Update Cart Quantity
 exports.updateCartItem = async (req, res) => {
     try {
         const userId = req.user.id;
         const itemId = req.params.id; // The ID of the cart item
         const { quantity } = req.body;
 
-        // MySQL syntax for updating
         const updateQuery = 'UPDATE cart_items SET quantity = ? WHERE id = ? AND user_id = ?';
         await pool.query(updateQuery, [quantity, itemId, userId]);
 

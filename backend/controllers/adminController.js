@@ -75,7 +75,7 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-// 4. Get Advanced Analytics (From our Window Function View!)
+// Get Advanced Analytics
 exports.getTopProducts = async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM vw_top_products_per_school');
@@ -86,11 +86,11 @@ exports.getTopProducts = async (req, res) => {
   }
 };
 
-// 5. Get Total Inventory Value (From our CURSOR-based Stored Procedure!)
+// Get Total Inventory Value
 exports.getInventoryValue = async (req, res) => {
   try {
     const [rows] = await pool.query('CALL CalculateTotalInventoryValue()');
-    // MySQL stored procedure results come wrapped in an extra array
+    
     const value = rows[0]?.[0]?.total_inventory_value ?? rows[0]?.total_inventory_value ?? 0;
     res.json({ totalInventoryValue: value });
   } catch (err) {

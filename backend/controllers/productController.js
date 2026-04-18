@@ -149,7 +149,8 @@ exports.getRecommendations = async (req, res) => {
                 product_category AS category,
                 product_stock AS stock,
                 product_discount AS discount_percent,
-                school_name
+                school_name,
+                image_url
              FROM vw_user_recommendations
              WHERE user_id = ?
              LIMIT 8`,

@@ -36,6 +36,7 @@ SELECT
   p.category             AS product_category,
   p.stock                AS product_stock,
   p.discount_percent     AS product_discount,
+  p.image_url            AS image_url,
   s.name                 AS school_name,
   s.id                   AS school_id
 FROM users u
@@ -66,6 +67,10 @@ ALTER TABLE orders
   ADD COLUMN shipping_fee     DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   ADD COLUMN tracking_number  VARCHAR(100)  DEFAULT NULL;
 
+-- Ensure order_items supports the size attribute from the cart
+ALTER TABLE order_items
+  ADD COLUMN size VARCHAR(50) DEFAULT NULL AFTER quantity;
+
 
 -- ────────────────────────────────────────────────────────────
 -- 4. UPDATE PlaceOrder STORED PROCEDURE
@@ -82,6 +87,13 @@ BEGIN
   DECLARE v_subtotal DECIMAL(10,2);
   DECLARE v_shipping DECIMAL(10,2) DEFAULT 0.00;
   DECLARE v_order_id INT;
+
+  -- Add global exception handler for deadlocks/errors to prevent hanging locks
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+  BEGIN 
+    ROLLBACK; 
+    RESIGNAL; 
+  END;
 
   -- Ensure the cart is not empty
   IF (SELECT COUNT(*) FROM cart_items WHERE user_id = p_user_id) = 0 THEN

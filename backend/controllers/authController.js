@@ -3,17 +3,17 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 require('dotenv').config();
 
-// Helper to generate token
+// Generate JWT Token
 const generateToken = (user) => {
     return jwt.sign(
         { 
             id: user.id, 
-            name: user.name,   // <--- Added Name
-            email: user.email, // <--- Added Email
+            name: user.name,
+            email: user.email,
             role: user.role 
         },
         process.env.JWT_SECRET, 
-        { expiresIn: '30d' }   // <--- Extended to 30 days for better UX
+        { expiresIn: '30d' }
     );
 };
 
@@ -21,7 +21,7 @@ const generateToken = (user) => {
 exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
-    // 1. Check if user exists (MySQL uses '?' instead of '$1')
+    // Check if user exists
     const [existingUsers] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ message: 'User already exists' });
@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
-    // 3. Insert User (MySQL doesn't use 'RETURNING id', it uses result.insertId)
+    // Insert User
     const userRole = role || 'customer';
     const [result] = await pool.query(
       'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid Credentials' });
     }
     
-    const user = users[0]; // MySQL returns an array of rows
+    const user = users[0];
 
     // 2. Check Password
     const isMatch = await bcrypt.compare(password, user.password_hash);

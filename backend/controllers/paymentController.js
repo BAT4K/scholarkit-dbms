@@ -11,7 +11,7 @@ exports.createPaymentOrder = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // FIXED: Changed PostgreSQL $1 to MySQL ? and used array destructuring [cartItems]
+        // Fetch cart items and prices
         const query = `
             SELECT c.quantity, p.price 
             FROM cart_items c 

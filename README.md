@@ -14,12 +14,13 @@ ScholarKit is a comprehensive full-stack solution for school uniform procurement
 - **Razorpay Account** (for test payments)
 
 ### 2. Database Setup
-1. Create a database named `scholarkit_dbms`.
-2. Run the migration scripts in order:
+1. Create a MySQL database named `scholarkit_dbms`.
+2. To completely generate the schema and seed the live database for demo purposes, run the following scripts from the root directory:
    ```bash
-   mysql -u root -p scholarkit_dbms < production_dump.sql
-   mysql -u root -p scholarkit_dbms < scripts/migration_v2_part1.sql
-   mysql -u root -p scholarkit_dbms < scripts/migration_v2_part2.sql
+   mysql -u root -p scholarkit_dbms < scripts/demo_wipe.sql
+   node scripts/demo_seed.js
+   mysql -u root -p scholarkit_dbms < scripts/demo_preload.sql
+   mysql -u root -p scholarkit_dbms < scripts/migration_v2.sql
    ```
 
 ### 3. Backend Configuration
@@ -39,13 +40,15 @@ CLOUDINARY_API_SECRET=your_secret
 
 ### 4. Installation & Launch
 ```bash
-# Install backend dependencies
-cd backend && npm install
-npm start
+# Install backend dependencies and launch API Server
+cd backend
+npm install
+npm run dev
 
-# Install frontend dependencies
-cd ../frontend && npm install
-npm start
+# In a new terminal, install frontend dependencies and launch Web App
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -54,12 +57,12 @@ npm start
 
 | Feature | Implementation | Purpose |
 | :--- | :--- | :--- |
-| **ACID Transactions** | `PlaceOrder` Stored Procedure | Ensures atomic checkouts and stock consistency. |
-| **SQL Cursors** | `CalculateTotalInventoryValue` | Iterative inventory audit logic. |
-| **Triggers** | `before_product_price_update` | Automatic price history logging for auditing. |
+| **ACID Transactions** | `PlaceOrder` Stored Procedure | Includes `ROLLBACK` error handlers ensuring atomic checkouts and safe stock deducts. |
+| **SQL Cursors** | `CalculateTotalInventoryValue` | Loop-based total inventory valuation logic via `product_cursor`. |
+| **Triggers** | `before_product_price_update`<br>`after_stock_depletion` | Auto logs price changes for auditing.<br>Auto inserts low-stock dashboard notifications. |
 | **Window Functions** | `vw_top_products_per_school` | Analytical ranking of products without complex app-logic. |
-| **Views** | `vw_user_recommendations` | Personalized recommendation engine. |
-| **Normalization** | 3rd Normal Form (3NF) | Reduced redundancy and optimized storage. |
+| **Views** | `vw_user_recommendations` | Smart personalized recommendation engine using embedded subqueries. |
+| **Normalization** | 3rd Normal Form (3NF) | 100% normalized relational database architecture reducing redundancy. |
 
 ---
 

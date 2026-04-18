@@ -15,11 +15,11 @@ function getGenderHeuristicClause(gender) {
 
     const normalizedGender = gender.toLowerCase();
     if (normalizedGender === 'male') {
-        return ` AND LOWER(p.name) NOT LIKE '%skirt%' `;
+        return ` AND LOWER(p.name) NOT LIKE '%skirt%' AND LOWER(p.name) NOT LIKE '%girls%' AND LOWER(p.name) NOT LIKE '%female%' `;
     }
 
     if (normalizedGender === 'female') {
-        return ` AND LOWER(p.name) NOT LIKE '%shorts%' `;
+        return ` AND LOWER(p.name) NOT LIKE '%boys%' AND LOWER(p.name) NOT LIKE '%mens%' AND LOWER(p.name) NOT LIKE '%male%' `;
     }
 
     return '';
@@ -103,6 +103,16 @@ exports.getGroupCatalog = async (req, res) => {
             ]);
         } else {
             const heuristicClause = getGenderHeuristicClause(gender);
+            
+            let gradeFilter = '';
+            if (group_id == 1) {
+                gradeFilter = " AND (p.grade_group = 'foundation' OR p.grade_group = 'all') ";
+            } else if (group_id == 2) {
+                gradeFilter = " AND (p.grade_group = 'primary' OR p.grade_group = 'all') ";
+            } else if (group_id == 3) {
+                gradeFilter = " AND (p.grade_group = 'secondary' OR p.grade_group = 'all') ";
+            }
+
             const fallbackQuery = `
                 SELECT
                     p.id,
@@ -114,9 +124,14 @@ exports.getGroupCatalog = async (req, res) => {
                     p.discount_percent,
                     ${imageSelect},
                     1 AS is_mandatory,
-                    'Unisex' AS specific_gender
+                    CASE 
+                        WHEN LOWER(p.name) LIKE '%boys%' OR LOWER(p.name) LIKE '%mens%' THEN 'Male'
+                        WHEN LOWER(p.name) LIKE '%girls%' OR LOWER(p.name) LIKE '%womens%' THEN 'Female'
+                        ELSE 'Unisex'
+                    END AS specific_gender
                 FROM products p
                 WHERE p.school_id = ?
+                ${gradeFilter}
                 ${heuristicClause}
                 ORDER BY p.name ASC
             `;
