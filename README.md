@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🎓 ScholarKit</h1>
-  <p><strong>Multi-Vendor E-Commerce Database System for Educational Resources</strong></p>
+  <p><strong>Multi-Vendor E-Commerce Database System for School Uniforms & Essentials</strong></p>
   
   <p>
     <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-blue?logo=react&logoColor=white" alt="React 19" /></a>
@@ -14,26 +14,26 @@
 
 ## 📖 About The Project
 
-**ScholarKit** is a full-stack, multi-vendor e-commerce platform designed specifically for students to seamlessly buy, sell, and trade educational resources. 
+**ScholarKit** is a full-stack, multi-vendor e-commerce platform engineered specifically to streamline the procurement of school uniforms and educational essentials. It bridges the gap between authorized uniform vendors and parents, providing a centralized and secure shopping experience. 
 
-Built with a focus on **data integrity, scalability, and performance**, ScholarKit demonstrates advanced **Relational Database Management System (DBMS)** concepts. The backend handles complex transaction processing and business logic natively in SQL, while the frontend delivers a sleek, modern, and highly responsive user experience built with React 19 and Tailwind CSS.
+Built with a focus on **data integrity, scalability, and performance**, ScholarKit demonstrates advanced **Relational Database Management System (DBMS)** concepts. The backend handles complex transaction processing and business logic natively in SQL, while the frontend delivers a sleek, modern, and highly responsive user interface built with React 19 and Tailwind CSS.
 
 ## 🎯 Technical Competencies & Skills Demonstrated
 
-- **Advanced Database Design:** 3NF Normalization, Vertical Partitioning, and materializing complex feeds using Views and Subqueries.
+- **Advanced Database Design:** 3NF Normalization, Vertical Partitioning, and materializing complex product feeds using Views and Subqueries.
 - **Transaction Management:** ACID-compliant operations utilizing MySQL Stored Procedures with automatic `ROLLBACK` handling for atomic checkout flows.
 - **Full-Stack Architecture:** RESTful API design with Node.js/Express and a scalable React frontend managed by the Context API.
-- **Secure Authentication & Authorization:** JWT-based stateless authentication paired with secure password hashing (`bcryptjs`).
+- **Secure Authentication & Authorization:** JWT-based stateless authentication paired with secure password hashing (`bcryptjs`) for separate Parent and Vendor roles.
 - **Cloud Infrastructure & Integrations:** Direct integration with Cloudinary for scalable image hosting and Razorpay for secure payment processing.
 
 ---
 
 ## ✨ Key Features
 
-- **Multi-Vendor Ecosystem**: Students function as both buyers and sellers, managing personal inventory, galleries, and sales analytics.
-- **Automated Inventory & Price Auditing**: Leveraging database-level Triggers (e.g., `BEFORE UPDATE`, `AFTER UPDATE`) to log price changes and generate low-inventory alerts automatically.
-- **Complex Analytics via SQL**: Utilizing Common Table Expressions (CTEs) and Window Functions (`ROW_NUMBER()`) to compute dynamic leaderboards and product rankings.
-- **Secure Media Management**: Cloudinary integration ensuring assets are compressed, optimized, and securely served.
+- **Multi-Vendor Ecosystem**: Dedicated seller dashboards empower authorized uniform vendors to manage their inventory, media galleries, and sales analytics. Simultaneously, parents enjoy a unified storefront to purchase required apparel and gear.
+- **Automated Inventory & Price Auditing**: Database-level Triggers (`BEFORE UPDATE`, `AFTER UPDATE`) automatically log price changes and generate low-inventory alerts without relying on application-layer logic.
+- **Complex Analytics via SQL**: Utilizing Common Table Expressions (CTEs) and Window Functions (`ROW_NUMBER()`) to dynamically compute leaderboards, such as the top-selling products per school.
+- **Secure Media Management**: Cloudinary integration ensures vendor product images are compressed, optimized, and securely served across the platform.
 
 ---
 
