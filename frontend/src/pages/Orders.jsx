@@ -21,7 +21,8 @@ export default function Orders() {
         });
         setOrders(res.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch order history.');
+        const msg = err.response?.data?.message || err.response?.data?.error || 'Failed to fetch order history.';
+        setError(msg);
       } finally {
         setLoading(false);
       }

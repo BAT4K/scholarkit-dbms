@@ -12,52 +12,44 @@
 
 ---
 
-## 📖 About ScholarKit
+## 📖 About The Project
 
-**ScholarKit** is a comprehensive multi-vendor platform where students can seamlessly buy, sell, and trade educational resources. 
+**ScholarKit** is a full-stack, multi-vendor e-commerce platform designed specifically for students to seamlessly buy, sell, and trade educational resources. 
 
-While the backend demonstrates advanced **Relational Database Management System (DBMS)** concepts to ensure data integrity and handle complex transaction processing, the frontend provides a sleek, modern, and highly responsive user interface built with the latest React framework and styled with Tailwind CSS.
+Built with a focus on **data integrity, scalability, and performance**, ScholarKit demonstrates advanced **Relational Database Management System (DBMS)** concepts. The backend handles complex transaction processing and business logic natively in SQL, while the frontend delivers a sleek, modern, and highly responsive user experience built with React 19 and Tailwind CSS.
+
+## 🎯 Technical Competencies & Skills Demonstrated
+
+- **Advanced Database Design:** 3NF Normalization, Vertical Partitioning, and materializing complex feeds using Views and Subqueries.
+- **Transaction Management:** ACID-compliant operations utilizing MySQL Stored Procedures with automatic `ROLLBACK` handling for atomic checkout flows.
+- **Full-Stack Architecture:** RESTful API design with Node.js/Express and a scalable React frontend managed by the Context API.
+- **Secure Authentication & Authorization:** JWT-based stateless authentication paired with secure password hashing (`bcryptjs`).
+- **Cloud Infrastructure & Integrations:** Direct integration with Cloudinary for scalable image hosting and Razorpay for secure payment processing.
+
+---
 
 ## ✨ Key Features
 
-- **Multi-Vendor Ecosystem**: Students can act as both buyers and sellers, managing their own inventory.
-- **Secure Authentication**: JWT-based authentication combined with secure password hashing.
-- **Media Management**: Direct integration with Cloudinary for scalable image uploads and gallery management.
-- **Payment Processing**: Integrated with Razorpay for seamless and secure checkout experiences.
-- **Robust Database Integrity**: Advanced DBMS features ensuring data remains consistent and transactions are atomic.
+- **Multi-Vendor Ecosystem**: Students function as both buyers and sellers, managing personal inventory, galleries, and sales analytics.
+- **Automated Inventory & Price Auditing**: Leveraging database-level Triggers (e.g., `BEFORE UPDATE`, `AFTER UPDATE`) to log price changes and generate low-inventory alerts automatically.
+- **Complex Analytics via SQL**: Utilizing Common Table Expressions (CTEs) and Window Functions (`ROW_NUMBER()`) to compute dynamic leaderboards and product rankings.
+- **Secure Media Management**: Cloudinary integration ensuring assets are compressed, optimized, and securely served.
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### 🎨 Frontend
-- **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Routing**: React Router v7
-- **Styling**: Tailwind CSS 3.4
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **Network**: Axios
+- **Core**: [React 19](https://react.dev/), [Vite](https://vitejs.dev/)
+- **Routing & State**: React Router v7, React Context API
+- **Styling**: Tailwind CSS 3.4, Framer Motion
+- **Icons & Network**: Lucide React, Axios
 
 ### ⚙️ Backend
-- **Server**: Node.js & Express.js
-- **Database Driver**: MySQL2
-- **Authentication**: JSON Web Tokens (JWT) & bcryptjs
-- **File Uploads**: Multer & Cloudinary SDK
-- **Payments**: Razorpay SDK
-
----
-
-## 🏗️ Architecture & Directory Structure
-
-### Frontend (`/frontend`)
-The frontend is built for performance and maintainability, employing a clean structure:
-- **`src/pages/`**: Top-level views (e.g., `AdminDashboard.jsx`, `SellerDashboard.jsx`, `Home.jsx`) that manage data fetching.
-- **`src/components/`**: Reusable, consistent UI components (buttons, modals, product cards) adhering to DRY principles.
-- **`src/context/`**: Global state management (Context API) for auth, cart, and preferences without prop-drilling.
-- **`src/utils/`**: Helper functions, formatters, and API client wrappers.
-
-### Backend (`/backend`)
-A RESTful API built with Express, providing secure endpoints to interact with the database, process payments, and manage media.
+- **Server Environment**: Node.js, Express.js
+- **Database Engine**: MySQL 8.0+
+- **Authentication**: JSON Web Tokens (JWT), bcryptjs
+- **Services**: Cloudinary SDK (Media), Razorpay SDK (Payments)
 
 ---
 
@@ -74,6 +66,20 @@ ScholarKit relies on the DBMS engine not just for storage, but for complex busin
 | **SQL Cursors** | The `CalculateTotalInventoryValue` procedure uses an explicit SQL `CURSOR` for row-by-row inventory processing during administrative audits. |
 | **Event-Driven Triggers** | Data integrity is automated: an `AFTER UPDATE` trigger generates low-inventory alerts, and a `BEFORE UPDATE` trigger logs automated price-change audits. |
 | **Set Deduplication** | Media Library enforces asset uniqueness by applying `SELECT DISTINCT` with parameterized `WHERE` clauses for isolated seller galleries. |
+
+---
+
+## 🏗️ Architecture & Directory Structure
+
+### Frontend (`/frontend`)
+The frontend is built for performance and maintainability, employing a clean structure:
+- **`src/pages/`**: Top-level views (e.g., `AdminDashboard.jsx`, `SellerDashboard.jsx`, `Home.jsx`) that manage data fetching.
+- **`src/components/`**: Reusable, consistent UI components (buttons, modals, product cards) adhering to DRY principles.
+- **`src/context/`**: Global state management (Context API) for auth, cart, and preferences without prop-drilling.
+- **`src/utils/`**: Helper functions, formatters, and API client wrappers.
+
+### Backend (`/backend`)
+A RESTful API built with Express, providing secure endpoints to interact with the database, process payments, and manage media.
 
 ---
 

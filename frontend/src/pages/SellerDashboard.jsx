@@ -41,7 +41,8 @@ export default function SellerDashboard() {
       });
       setProducts(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch inventory.');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Failed to fetch inventory.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -87,7 +88,7 @@ export default function SellerDashboard() {
       setProducts(products.filter(p => p.id !== productId));
       toast.success('Product deleted.');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to delete product.');
+      toast.error(err.response?.data?.message || err.response?.data?.error || 'Failed to delete product.');
     }
   };
 

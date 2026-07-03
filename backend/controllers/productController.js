@@ -19,6 +19,12 @@ exports.getSellerProducts = async (req, res) => {
             ? 'COALESCE(p.image_url, ?) AS image_url'
             : '? AS image_url';
 
+        // RBAC: Sellers only see their products, Admins see all
+        if (req.user.role === 'seller') {
+            conditions.push('p.seller_id = (SELECT id FROM sellers WHERE user_id = ?)');
+            params.push(req.user.id);
+        }
+
         if (school_id) {
             conditions.push('p.school_id = ?');
             params.push(school_id);
@@ -46,7 +52,7 @@ exports.getSellerProducts = async (req, res) => {
         res.json(rows);
     } catch (err) {
         console.error('Seller products error:', err);
-        res.status(500).json({ message: 'Failed to load inventory.' });
+        res.status(500).json({ message: 'Failed to fetch inventory.' });
     }
 };
 
@@ -172,7 +178,15 @@ exports.getRecommendations = async (req, res) => {
 exports.createProduct = async (req, res) => {
     const { name, price, stock, category, school_id, discount_percent, size, image_url } = req.body;
     const isAdmin = req.user.role === 'admin';
-    const sellerId = isAdmin ? (req.body.seller_id || req.user.id) : req.user.id;
+    let sellerId;
+    
+    if (isAdmin) {
+        sellerId = req.body.seller_id || 1; // Default to first seller if not provided
+    } else {
+        const [sellers] = await pool.query('SELECT id FROM sellers WHERE user_id = ?', [req.user.id]);
+        if (sellers.length === 0) return res.status(403).json({ message: 'You are not registered as a seller.' });
+        sellerId = sellers[0].id;
+    }
 
     if (!name || !price) {
         return res.status(400).json({ message: 'Name and price are required.' });
@@ -212,11 +226,11 @@ exports.updateProduct = async (req, res) => {
     try {
         // RBAC: Sellers can only update their own products
         if (!isAdmin) {
-            const [[existing]] = await pool.query('SELECT seller_id FROM products WHERE id = ?', [id]);
-            if (!existing) return res.status(404).json({ message: 'Product not found.' });
-            if (existing.seller_id !== req.user.id) {
-                return res.status(403).json({ message: 'You can only edit your own products.' });
-            }
+            const [[existing]] = await pool.query(
+                'SELECT p.seller_id FROM products p JOIN sellers s ON p.seller_id = s.id WHERE p.id = ? AND s.user_id = ?', 
+                [id, req.user.id]
+            );
+            if (!existing) return res.status(403).json({ message: 'You can only edit your own products.' });
         }
 
         const fields = [];
@@ -267,11 +281,11 @@ exports.deleteProduct = async (req, res) => {
     try {
         // RBAC: Sellers can only delete their own products
         if (!isAdmin) {
-            const [[existing]] = await pool.query('SELECT seller_id FROM products WHERE id = ?', [id]);
-            if (!existing) return res.status(404).json({ message: 'Product not found.' });
-            if (existing.seller_id !== req.user.id) {
-                return res.status(403).json({ message: 'You can only delete your own products.' });
-            }
+            const [[existing]] = await pool.query(
+                'SELECT p.seller_id FROM products p JOIN sellers s ON p.seller_id = s.id WHERE p.id = ? AND s.user_id = ?', 
+                [id, req.user.id]
+            );
+            if (!existing) return res.status(403).json({ message: 'You can only delete your own products.' });
         }
 
         const [result] = await pool.query('DELETE FROM products WHERE id = ?', [id]);

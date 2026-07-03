@@ -41,7 +41,7 @@ exports.register = async (req, res) => {
     const userId = result.insertId;
 
     // 4. Generate Token
-    const token = jwt.sign({ id: userId, role: userRole }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = generateToken({ id: userId, name, email, role: userRole });
     
     res.status(201).json({ token, user: { id: userId, name, email, role: userRole } });
   } catch (err) {
@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
     }
 
     // 3. Generate Token
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = generateToken(user);
     
     res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (err) {
